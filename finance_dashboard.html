@@ -1224,27 +1224,6 @@ async function saveAdd() {
 // Close modals on overlay click
 document.getElementById('edit-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
 document.getElementById('add-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeAddModal(); });
-  window.addEventListener('load', () => {
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  if (!isLocal) {
-    document.getElementById('setup-banner').style.display = 'none';
-    document.getElementById('live-status').style.display = 'flex';
-    refreshBot();
-    setInterval(refreshBot, 30000);
-    return;
-  }
-  const mode = localStorage.getItem('finance-mode');
-  if (mode === 'bot') {
-    const port = localStorage.getItem('finance-bot-port') || '3000';
-    document.getElementById('bot-port').value = port;
-    loadFromBot();
-    return;
-  }
-  const saved = localStorage.getItem('finance-sheet-url');
-  if (saved) {
-    setMode('sheet');
-    document.getElementById('sheet-url').value = saved;
-    loadData();
 </script>
 </body>
 </html>
