@@ -1224,6 +1224,49 @@ async function saveAdd() {
 // Close modals on overlay click
 document.getElementById('edit-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
 document.getElementById('add-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeAddModal(); });
+
+// Auto-connect on load
+window.addEventListener('load', async () => {
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  if (!isLocal) {
+    // On Railway — auto fetch from same origin, no setup needed
+    document.getElementById('setup-banner').style.display = 'none';
+    document.getElementById('live-status').style.display = 'flex';
+    try {
+      const res = await fetch('/api/data');
+      if (res.ok) {
+        const json = await res.json();
+        parseLocalData(json);
+        document.getElementById('last-sync').textContent = 'synced ' + new Date().toLocaleTimeString();
+      }
+    } catch(e) { console.error('Auto-connect failed', e); }
+    setInterval(async () => {
+      try {
+        const res = await fetch('/api/data');
+        if (res.ok) {
+          const json = await res.json();
+          parseLocalData(json);
+          document.getElementById('last-sync').textContent = 'synced ' + new Date().toLocaleTimeString();
+        }
+      } catch {}
+    }, 30000);
+    return;
+  }
+  // Local — restore saved connection
+  const mode = localStorage.getItem('finance-mode');
+  if (mode === 'bot') {
+    const port = localStorage.getItem('finance-bot-port') || '3000';
+    document.getElementById('bot-port').value = port;
+    loadFromBot();
+    return;
+  }
+  const saved = localStorage.getItem('finance-sheet-url');
+  if (saved) {
+    setMode('sheet');
+    document.getElementById('sheet-url').value = saved;
+    loadData();
+  }
+});
 </script>
 </body>
 </html>
