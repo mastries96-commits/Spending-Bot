@@ -1,5 +1,5 @@
 import os
-import pg8000
+import pg8000  # v3.1
 import logging
 from datetime import datetime
 from telegram import Update
