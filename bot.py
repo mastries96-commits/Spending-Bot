@@ -2,7 +2,6 @@ import os
 import pg8000
 import logging
 from datetime import datetime
-from urllib.parse import urlparse
 from telegram import Update
 from telegram.ext import Application, MessageHandler, CommandHandler, filters, ContextTypes
 
@@ -26,13 +25,12 @@ CAT_ICONS = {
 }
 
 def get_db():
-    url = urlparse(os.environ['DATABASE_URL'])
     conn = pg8000.connect(
-        host=url.hostname,
-        port=url.port or 5432,
-        database=url.path[1:],
-        user=url.username,
-        password=url.password,
+        host=os.environ['PGHOST'],
+        port=int(os.environ.get('PGPORT', 5432)),
+        database=os.environ['PGDATABASE'],
+        user=os.environ['PGUSER'],
+        password=os.environ['PGPASSWORD'],
         ssl_context=True
     )
     return conn
